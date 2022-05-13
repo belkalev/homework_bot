@@ -1,0 +1,10 @@
+TELEGRAM_TOKEN='5300692153:AAHKlixDn48od5sjkVCDmDWMfP2izmRRboY'
+
+PRACTIKUM_TOKEN='AQAAAAAbHrYUAAYckfmT9SUIPEPdmh-YnJJAT9A'
+
+TELEGRAM_CHAT_ID=121328355
+
+# В этом файле может быть несколько переменных
+# Каждая - на отдельной строке
+# LOGIN=test
+# PASSWORD=some_password
