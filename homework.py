@@ -82,21 +82,30 @@ def check_response(response):
     """Проверяем ответ API."""
     if not isinstance(response, dict):
         raise TypeError('Неверный тип данных')
+    if 'homeworks' not in response:
+        raise ValueError('В запросе нет ключа homeworks')
     try:
         homeworks = response.get('homeworks')
     except KeyError:
         logger.error('Ошибка словаря по ключу homeworks')
         raise KeyError('Ошибка словаря по ключу homeworks')
+    if not isinstance(homeworks, list):
+        raise TypeError('Неверный тип данных')
     return homeworks
 
 
 def parse_status(homework):
     """Извлекает инфу о конкретном ДЗ."""
-    name = homework['homework_name']
+    homework_name = homework['homework_name']
     status = homework['status']
+    if 'homework_name' not in homework:
+        raise KeyError('Отсутствует ключ "homework_name" в ответе API')
+    if 'status' not in homework:
+        raise Exception('Отсутствует ключ "homework_status" в ответе API')
     if status not in HOMEWORK_STATUSES:
         raise ValueError(f'Неизветный статус {status}')
-    return (f'Изменился статус ДЗ "{name}". {status}')
+    verdict = HOMEWORK_STATUSES[status]
+    return (f'Изменился статус проверки работы "{homework_name}". {verdict}')
 
 
 def check_tokens():
