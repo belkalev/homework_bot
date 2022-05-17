@@ -70,7 +70,7 @@ def get_api_answer(current_timestamp):
     if homework_statuses.status_code != HTTPStatus.OK:
         status_code = homework_statuses.status_code
         logger.error(f'Ошибка {status_code}')
-        raise Exception(f'Ошибка {status_code}')
+        raise ValueError(f'Ошибка {status_code}')
     try:
         return homework_statuses.json()
     except json.decoder.JSONDecodeError:
@@ -96,12 +96,12 @@ def check_response(response):
 
 def parse_status(homework):
     """Извлекает инфу о конкретном ДЗ."""
-    homework_name = homework['homework_name']
-    status = homework['status']
     if 'homework_name' not in homework:
         raise KeyError('Отсутствует ключ "homework_name" в ответе API')
     if 'status' not in homework:
         raise Exception('Отсутствует ключ "homework_status" в ответе API')
+    homework_name = homework['homework_name']
+    status = homework['status']
     if status not in HOMEWORK_STATUSES:
         raise ValueError(f'Неизветный статус {status}')
     verdict = HOMEWORK_STATUSES[status]
@@ -119,16 +119,16 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
-    if check_tokens() is False:
+    if not check_tokens():
         raise ValueError('Ошибка токена')
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            homework = check_response(response)
-            if homework:
-                message = parse_status(homework[0])
+            homeworks = check_response(response)
+            if homeworks:
+                message = parse_status(homeworks[0])
                 send_message(bot, message)
                 current_timestamp = response.get(
                     'current_date', current_timestamp
